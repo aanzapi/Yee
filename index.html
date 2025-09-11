@@ -3,40 +3,41 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Multi Downloader — Aanz (Fix)</title>
+  <title>Aanz Downloader</title>
   <style>
-    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;background:linear-gradient(135deg,#0d1b2a,#1b263b);color:#f1f5f9;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:28px}
-    .box{width:100%;max-width:880px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05);border-radius:18px;padding:28px;backdrop-filter:blur(12px);box-shadow:0 20px 50px rgba(0,0,0,0.6)}
-    h1{margin:0 0 4px;font-size:26px;color:#e0f2fe}
-    p{margin:0;color:rgba(241,245,249,0.65);font-size:14px}
-    .row{display:flex;gap:12px;margin-top:18px}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,sans-serif;background:linear-gradient(135deg,#0f172a,#1e293b);color:#f8fafc;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+    .container{width:100%;max-width:800px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:28px;backdrop-filter:blur(12px);box-shadow:0 20px 40px rgba(0,0,0,0.6)}
+    h1{margin:0 0 10px;font-size:28px;color:#f1f5f9;text-align:center}
+    p{text-align:center;margin:0 0 22px;color:#94a3b8;font-size:15px}
+    .row{display:flex;gap:10px;flex-wrap:wrap}
     select,input,button{padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.08);font-size:14px}
-    select,input{flex:1;background:rgba(255,255,255,0.05);color:#f1f5f9}
-    button{background:linear-gradient(90deg,#38bdf8,#6366f1);color:#0f172a;font-weight:700;cursor:pointer;box-shadow:0 8px 20px rgba(56,189,248,0.25)}
-    .preview{margin-top:18px;border-radius:12px;overflow:hidden;background:#000;display:flex;align-items:center;justify-content:center;min-height:220px;color:#94a3b8;text-align:center}
-    .actions{display:flex;gap:12px;margin-top:14px}
-    .actions button{flex:1;background:#1e293b;color:#f8fafc;border-radius:10px;padding:10px;border:none;cursor:pointer}
-    footer{margin-top:20px;text-align:center;font-size:13px;color:#94a3b8}
-    @media(max-width:880px){.row{flex-direction:column}}
+    select,input{flex:1;min-width:180px;background:rgba(255,255,255,0.06);color:#f8fafc}
+    button{background:linear-gradient(90deg,#3b82f6,#6366f1);color:#fff;font-weight:600;cursor:pointer;transition:0.2s}
+    button:hover{opacity:0.9;transform:translateY(-1px)}
+    .preview{margin-top:18px;border-radius:12px;overflow:hidden;background:#000;display:flex;align-items:center;justify-content:center;min-height:220px;text-align:center;color:#94a3b8}
+    .actions{display:flex;gap:12px;margin-top:16px}
+    .actions button{flex:1;background:#1e293b;color:#f8fafc;border:none;border-radius:10px;padding:10px;cursor:pointer}
+    footer{margin-top:22px;text-align:center;font-size:13px;color:#64748b}
+    video,img{max-width:100%;height:auto}
   </style>
 </head>
 <body>
-  <div class="box">
-    <h1>All-in-One Downloader — Fixed</h1>
-    <p>Pilih platform → tempel URL → tekan <strong>Fetch</strong>. Script sudah diperbaiki untuk menemukan link secara otomatis.</p>
+  <div class="container">
+    <h1>Aanz Downloader</h1>
+    <p>Download video dari <strong>YouTube</strong>, <strong>Instagram</strong>, dan <strong>TikTok</strong> secara instan.</p>
 
     <div class="row">
       <select id="platform">
-        <option value="ytmp4">YouTube (MP4)</option>
+        <option value="ytmp4">YouTube</option>
         <option value="instagram">Instagram</option>
         <option value="tiktok">TikTok</option>
       </select>
-
-      <input id="urlInput" placeholder="Tempel URL video (contoh: link TikTok / Instagram / YouTube)"/>
+      <input id="urlInput" placeholder="Tempel URL video di sini"/>
       <button id="fetchBtn">Fetch</button>
     </div>
 
-    <div id="preview" class="preview">Preview akan muncul di sini</div>
+    <div id="preview" class="preview">Preview akan tampil di sini</div>
 
     <div class="actions">
       <button id="downloadBtn" style="display:none">⬇️ Download</button>
@@ -55,204 +56,86 @@
     const downloadBtn = document.getElementById('downloadBtn');
     const openBtn = document.getElementById('openBtn');
 
-    let lastBlob = null;
-    let lastUrl = null;
-    let lastIsBlob = false;
+    let lastBlob=null,lastUrl=null,lastIsBlob=false;
 
-    function isHttpUrl(s){
-      try { new URL(s); return true; } catch(e){ return false; }
+    function isHttpUrl(s){try{new URL(s);return true}catch{return false}}
+
+    function collectUrls(obj,out=[]){
+      if(!obj)return out;
+      if(typeof obj==="string"){if(isHttpUrl(obj.trim()))out.push(obj.trim());return out}
+      if(Array.isArray(obj)){obj.forEach(v=>collectUrls(v,out));return out}
+      if(typeof obj==="object"){for(const k in obj)collectUrls(obj[k],out)}
+      return out
     }
 
-    // collect all strings that look like URLs from an object (recursive)
-    function collectUrls(obj, out = []){
-      if (!obj) return out;
-      if (typeof obj === 'string'){
-        const trimmed = obj.trim();
-        // sometimes response contains escaped JSON inside string -> ignore huge HTML
-        if (isHttpUrl(trimmed)) out.push(trimmed);
-        return out;
-      }
-      if (Array.isArray(obj)){
-        for (const v of obj) collectUrls(v, out);
-        return out;
-      }
-      if (typeof obj === 'object'){
-        for (const k of Object.keys(obj)){
-          try {
-            collectUrls(obj[k], out);
-          } catch(e){}
-        }
-      }
-      return out;
-    }
-
-    // score candidate urls (higher = better)
     function scoreUrl(u){
-      const s = u.toLowerCase();
-      let score = 0;
-      if (/\.(mp4|webm|mov|m3u8)(\?.*)?$/.test(s)) score += 6;
-      if (s.includes('nowm') || s.includes('nowatermark') || s.includes('no_watermark') || s.includes('noWatermark'.toLowerCase())) score += 8;
-      if (s.includes('nowm') || s.includes('nowm=')) score += 3;
-      if (s.includes('tiktokcdn') || s.includes('cdninstagram') || s.includes('fbcdn') || s.includes('akamaized')) score += 5;
-      if (s.includes('download') || s.includes('play') || s.includes('video')) score += 2;
-      // prefer https
-      if (s.startsWith('https://')) score += 1;
-      // longer url maybe more direct
-      score += Math.min(3, Math.floor(s.length / 80));
-      return score;
+      const s=u.toLowerCase();let sc=0;
+      if(/\.(mp4|webm|mov)(\?.*)?$/.test(s))sc+=5;
+      if(s.includes("nowm")||s.includes("nowatermark"))sc+=8;
+      if(s.includes("tiktokcdn")||s.includes("cdninstagram")||s.includes("fbcdn"))sc+=4;
+      return sc
     }
 
     function pickBestUrl(list){
-      if (!list || !list.length) return null;
-      const unique = Array.from(new Set(list));
-      const scored = unique.map(u => ({u, score: scoreUrl(u)}));
-      scored.sort((a,b) => b.score - a.score);
-      // return top whose score > 0, else first
-      return (scored[0].score>0) ? scored[0].u : unique[0];
+      if(!list.length)return null;
+      return list.sort((a,b)=>scoreUrl(b)-scoreUrl(a))[0]
     }
 
     async function fetchAndPreview(resourceUrl){
-      // try to fetch as blob (to allow forced download)
-      try {
-        const res = await fetch(resourceUrl);
-        if (!res.ok) throw new Error('Resource HTTP ' + res.status);
-        const blob = await res.blob();
-        lastBlob = blob;
-        lastIsBlob = true;
-        lastUrl = URL.createObjectURL(blob);
-        const ctype = (res.headers.get('content-type')||'').toLowerCase();
-        if (ctype.startsWith('video/')) {
-          preview.innerHTML = `<video controls src="${lastUrl}" style="width:100%"></video>`;
-        } else if (ctype.startsWith('image/')) {
-          preview.innerHTML = `<img src="${lastUrl}" style="width:100%"/>`;
-        } else {
-          preview.innerHTML = `<div style="padding:18px;color:#94a3b8">File siap diunduh.</div>`;
-        }
-        showActions(true);
-      } catch(err){
-        // fallback: cannot fetch blob (CORS) → show link only
-        lastBlob = null;
-        lastIsBlob = false;
-        lastUrl = resourceUrl;
-        preview.innerHTML = `<div style="text-align:center;color:#94a3b8">Preview tidak tersedia. <br><a href="${escapeHtml(resourceUrl)}" target="_blank" rel="noopener" style="color:#38bdf8">Buka di tab baru</a></div>`;
-        showActions(true);
+      try{
+        const res=await fetch(resourceUrl);
+        if(!res.ok)throw new Error("HTTP "+res.status);
+        const blob=await res.blob();
+        lastBlob=blob;lastIsBlob=true;lastUrl=URL.createObjectURL(blob);
+        const type=(res.headers.get("content-type")||"").toLowerCase();
+        if(type.startsWith("video/"))preview.innerHTML=`<video controls src="${lastUrl}"></video>`;
+        else if(type.startsWith("image/"))preview.innerHTML=`<img src="${lastUrl}"/>`;
+        else preview.textContent="File siap diunduh.";
+        showActions(true)
+      }catch{
+        lastBlob=null;lastIsBlob=false;lastUrl=resourceUrl;
+        preview.innerHTML=`<a href="${resourceUrl}" target="_blank" style="color:#3b82f6">Buka di tab baru</a>`;
+        showActions(true)
       }
     }
 
-    function showActions(show){
-      downloadBtn.style.display = show ? 'block' : 'none';
-      openBtn.style.display = show ? 'block' : 'none';
-    }
+    function showActions(s){downloadBtn.style.display=openBtn.style.display=s?"block":"none"}
 
-    fetchBtn.addEventListener('click', async ()=>{
-      const platform = platformEl.value;
-      const input = urlInput.value.trim();
-      if (!input) return alert('Masukkan URL dulu.');
-      preview.textContent = 'Memproses...';
-      showActions(false);
-      lastBlob = null; lastUrl = null; lastIsBlob = false;
+    fetchBtn.addEventListener("click",async()=>{
+      const platform=platformEl.value;
+      const input=urlInput.value.trim();
+      if(!input)return alert("Masukkan URL dulu!");
+      preview.textContent="Memproses...";showActions(false);
+      lastBlob=null;lastUrl=null;lastIsBlob=false;
+      try{
+        const resp=await fetch(`${API_BASE}/${platform}?url=${encodeURIComponent(input)}`);
+        if(!resp.ok)throw new Error("API "+resp.status);
+        const ctype=(resp.headers.get("content-type")||"").toLowerCase();
+        if(ctype.includes("json")){
+          const j=await resp.json();
+          const urls=collectUrls(j);
+          const best=pickBestUrl(urls);
+          if(best)return fetchAndPreview(best);
+          preview.textContent="Link tidak ditemukan."
+        }else if(ctype.startsWith("video/")||ctype.startsWith("image/")){
+          const blob=await resp.blob();lastBlob=blob;lastIsBlob=true;lastUrl=URL.createObjectURL(blob);
+          if(ctype.startsWith("video/"))preview.innerHTML=`<video controls src="${lastUrl}"></video>`;
+          else preview.innerHTML=`<img src="${lastUrl}"/>`;
+          showActions(true)
+        }else preview.textContent="Respon tidak valid."
+      }catch(e){preview.textContent="Gagal memuat: "+e.message}
+    });
 
-      const apiUrl = `${API_BASE}/${platform}?url=${encodeURIComponent(input)}`;
-      try {
-        const resp = await fetch(apiUrl);
-        if (!resp.ok) throw new Error('API HTTP ' + resp.status);
-        const ctype = (resp.headers.get('content-type')||'').toLowerCase();
-
-        // If API returned JSON -> parse and search
-        if (ctype.includes('application/json')){
-          const j = await resp.json();
-          // console.log('API JSON', j); // for debug (console)
-          // try to find common fields quickly
-          const quick = [
-            j.result && j.result.video && j.result.video.noWatermark,
-            j.result && j.result.video && j.result.video.watermark,
-            j.downloadUrl,
-            j.url,
-            j.result && j.result.downloadUrl,
-            j.video && j.video.noWatermark,
-            j.data && j.data.play,
-            j.data && j.data.nowm
-          ].filter(Boolean);
-          if (quick.length){
-            const pick = quick[0];
-            await fetchAndPreview(pick);
-            return;
-          }
-
-          // otherwise search recursively for any url-like strings
-          const candidates = collectUrls(j);
-          const best = pickBestUrl(candidates);
-          if (best){
-            await fetchAndPreview(best);
-            return;
-          }
-
-          // no url found
-          preview.innerHTML = `<div style="padding:18px;color:#ffc7c7">API merespon tapi tidak ditemukan link video di response.</div>`;
-          console.log('Full API response (no url found):', j);
-          return;
-        }
-
-        // If API returns binary (video/image) directly
-        if (ctype.startsWith('video/') || ctype.startsWith('image/') || ctype.includes('octet-stream')){
-          const blob = await resp.blob();
-          lastBlob = blob;
-          lastIsBlob = true;
-          lastUrl = URL.createObjectURL(blob);
-          if (ctype.startsWith('video/')) preview.innerHTML = `<video controls src="${lastUrl}" style="width:100%"></video>`;
-          else preview.innerHTML = `<img src="${lastUrl}" style="width:100%"/>`;
-          showActions(true);
-          return;
-        }
-
-        // Otherwise HTML or text (likely Cloudflare block)
-        const txt = await resp.text();
-        preview.innerHTML = `<div style="padding:18px;color:#ffc7c7">Response tidak valid (mungkin diblokir). Coba gunakan proxy jika perlu.</div>`;
-        console.warn('Non-media response:', txt.slice(0,500));
-      } catch (err){
-        console.error(err);
-        preview.innerHTML = `<div style="padding:18px;color:#ffc7c7">Gagal memuat hasil: ${escapeHtml(String(err.message || err))}</div>`;
+    downloadBtn.addEventListener("click",async()=>{
+      if(lastIsBlob&&lastBlob)saveBlob(lastBlob,"download.mp4");
+      else if(lastUrl){
+        try{const r=await fetch(lastUrl);saveBlob(await r.blob(),"download.mp4")}
+        catch{window.open(lastUrl,"_blank")}
       }
     });
+    openBtn.addEventListener("click",()=>{if(lastUrl)window.open(lastUrl,"_blank")});
 
-    downloadBtn.addEventListener('click', async ()=>{
-      const filename = 'downloaded_file';
-      try {
-        if (lastIsBlob && lastBlob){
-          saveBlob(lastBlob, filename);
-        } else if (lastUrl){
-          // attempt to fetch lastUrl as blob then save
-          const r = await fetch(lastUrl);
-          if (!r.ok) throw new Error('Resource HTTP ' + r.status);
-          const b = await r.blob();
-          saveBlob(b, filename);
-        } else {
-          alert('Tidak ada file untuk didownload.');
-        }
-      } catch (err){
-        console.error(err);
-        // fallback open url if cannot fetch
-        if (lastUrl) window.open(lastUrl, '_blank', 'noopener');
-        else alert('Gagal mendownload: ' + (err.message || err));
-      }
-    });
-
-    openBtn.addEventListener('click', ()=>{
-      if (lastUrl) window.open(lastUrl, '_blank', 'noopener');
-    });
-
-    function saveBlob(blob, filename){
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      setTimeout(()=>URL.revokeObjectURL(url), 1500);
-    }
-
-    function escapeHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+    function saveBlob(blob,name){const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1500)}
   </script>
 </body>
 </html>
