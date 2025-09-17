@@ -118,8 +118,7 @@
       clearPreview();
 
       // build endpoint
-      const apiUrl = `${API_BASE}/${platform}?url=${encodeURIComponent(input)}`;
-
+const apiUrl = `${API_BASE}?url=${encodeURIComponent(input)}`;
       try {
         const resp = await fetch(apiUrl);
         if (!resp.ok) throw new Error("API error: " + resp.status);
