@@ -2,1032 +2,217 @@
 <html lang="id">
 <head>
   <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Aanz Downloader</title>
+
   <style>
-    /* Reset & Base Styles */
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Inter,system-ui;
+      background:linear-gradient(135deg,#0f172a,#1e293b);
+      color:#f8fafc;
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:20px
     }
-    
-    body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
-      background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
-      color: #f8fafc;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      position: relative;
-      overflow-x: hidden;
+    .container{
+      width:100%;
+      max-width:880px;
+      background:rgba(255,255,255,0.04);
+      border-radius:16px;
+      padding:22px;
+      box-shadow:0 20px 50px rgba(0,0,0,.6)
     }
-    
-    /* Background Animation */
-    body::before {
-      content: '';
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: 
-        radial-gradient(circle at 20% 30%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
-        radial-gradient(circle at 80% 70%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
-        radial-gradient(circle at 40% 80%, rgba(59, 130, 246, 0.05) 0%, transparent 50%);
-      z-index: -1;
+    header{display:flex;gap:12px;align-items:center}
+    .logo{
+      width:52px;height:52px;
+      border-radius:12px;
+      background:linear-gradient(90deg,#60a5fa,#7c3aed);
+      display:flex;align-items:center;justify-content:center;
+      font-weight:900;color:#020617
     }
-    
-    /* Main Container */
-    .container {
-      width: 100%;
-      max-width: 920px;
-      background: rgba(15, 23, 42, 0.8);
-      border: 1px solid rgba(99, 102, 241, 0.2);
-      border-radius: 20px;
-      padding: 30px;
-      backdrop-filter: blur(20px);
-      box-shadow: 
-        0 25px 50px -12px rgba(0, 0, 0, 0.5),
-        0 0 0 1px rgba(99, 102, 241, 0.1),
-        inset 0 1px 0 rgba(255, 255, 255, 0.05);
-      animation: containerAppear 0.6s ease-out;
+    h1{margin:0;font-size:20px}
+    .sub{color:#94a3b8;font-size:13px}
+    .controls{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+    select,input,button{
+      padding:12px;border-radius:10px;border:none;
+      font-size:14px
     }
-    
-    @keyframes containerAppear {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+    select,input{
+      flex:1;
+      background:#020617;
+      color:#fff
     }
-    
-    /* Header */
-    header {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      margin-bottom: 24px;
-      padding-bottom: 24px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    button.primary{
+      background:linear-gradient(90deg,#60a5fa,#7c3aed);
+      color:#020617;font-weight:700;cursor:pointer
     }
-    
-    .logo {
-      width: 60px;
-      height: 60px;
-      border-radius: 14px;
-      background: linear-gradient(135deg, #60a5fa 0%, #7c3aed 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 800;
-      font-size: 24px;
-      color: #0f172a;
-      box-shadow: 
-        0 8px 20px rgba(99, 102, 241, 0.3),
-        inset 0 1px 0 rgba(255, 255, 255, 0.3);
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    button.ghost{
+      background:#020617;color:#cbd5e1;cursor:pointer
     }
-    
-    .logo:hover {
-      transform: translateY(-2px);
-      box-shadow: 
-        0 12px 25px rgba(99, 102, 241, 0.4),
-        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    .preview{
+      margin-top:18px;
+      background:#000;
+      border-radius:14px;
+      min-height:260px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:#94a3b8
     }
-    
-    h1 {
-      margin: 0;
-      font-size: 28px;
-      background: linear-gradient(135deg, #e6f6ff 0%, #c7d2fe 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      font-weight: 800;
-      letter-spacing: -0.5px;
+    video{width:100%;border-radius:12px}
+    .actions{display:flex;gap:10px;margin-top:14px}
+    .actions button{
+      flex:1;
+      padding:12px;
+      border-radius:10px;
+      background:#020617;
+      color:#fff;
+      cursor:pointer
     }
-    
-    p.sub {
-      margin: 4px 0 0;
-      color: #94a3b8;
-      font-size: 14px;
-      font-weight: 400;
-    }
-    
-    /* Platform Selector */
-    .platform-selector {
-      margin-bottom: 20px;
-    }
-    
-    .platform-tabs {
-      display: flex;
-      gap: 8px;
-      background: rgba(30, 41, 59, 0.5);
-      padding: 6px;
-      border-radius: 12px;
-      border: 1px solid rgba(255, 255, 255, 0.05);
-    }
-    
-    .platform-tab {
-      flex: 1;
-      padding: 12px 16px;
-      border: none;
-      border-radius: 10px;
-      background: transparent;
-      color: #94a3b8;
-      font-weight: 500;
-      font-size: 14px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-    }
-    
-    .platform-tab.active {
-      background: linear-gradient(135deg, #60a5fa 0%, #7c3aed 100%);
-      color: #0f172a;
-      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
-    }
-    
-    .platform-tab:hover:not(.active) {
-      background: rgba(255, 255, 255, 0.05);
-      color: #e2e8f0;
-    }
-    
-    /* URL Input Section */
-    .url-section {
-      margin-bottom: 24px;
-    }
-    
-    .url-input-container {
-      display: flex;
-      gap: 12px;
-      margin-bottom: 12px;
-    }
-    
-    .url-input {
-      flex: 1;
-      padding: 16px 20px;
-      border-radius: 12px;
-      border: 1px solid rgba(99, 102, 241, 0.2);
-      background: rgba(30, 41, 59, 0.7);
-      color: #f8fafc;
-      font-size: 15px;
-      transition: all 0.2s ease;
-    }
-    
-    .url-input:focus {
-      outline: none;
-      border-color: rgba(99, 102, 241, 0.6);
-      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-      background: rgba(30, 41, 59, 0.9);
-    }
-    
-    .url-input::placeholder {
-      color: #64748b;
-    }
-    
-    /* Buttons */
-    .btn {
-      padding: 16px 24px;
-      border-radius: 12px;
-      border: none;
-      font-size: 15px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      min-width: 100px;
-    }
-    
-    .btn-paste {
-      background: rgba(30, 41, 59, 0.7);
-      color: #cbd5e1;
-      border: 1px solid rgba(255, 255, 255, 0.05);
-    }
-    
-    .btn-paste:hover {
-      background: rgba(30, 41, 59, 0.9);
-      border-color: rgba(99, 102, 241, 0.3);
-      color: #f8fafc;
-    }
-    
-    .btn-create {
-      background: linear-gradient(135deg, #60a5fa 0%, #7c3aed 100%);
-      color: #0f172a;
-      box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
-    }
-    
-    .btn-create:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 12px 25px rgba(99, 102, 241, 0.4);
-    }
-    
-    .btn-create:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-      transform: none;
-    }
-    
-    /* Preview Section */
-    .preview-section {
-      margin-bottom: 24px;
-    }
-    
-    .preview-container {
-      border-radius: 16px;
-      overflow: hidden;
-      background: #000;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 300px;
-      position: relative;
-      border: 1px solid rgba(255, 255, 255, 0.05);
-    }
-    
-    .preview-placeholder {
-      text-align: center;
-      padding: 40px;
-      color: #64748b;
-    }
-    
-    .preview-placeholder .icon {
-      font-size: 48px;
-      margin-bottom: 16px;
-      opacity: 0.5;
-    }
-    
-    video, img {
-      max-width: 100%;
-      height: auto;
-      display: block;
-    }
-    
-    .preview-loading {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 16px;
-      padding: 40px;
-    }
-    
-    .spinner {
-      width: 40px;
-      height: 40px;
-      border: 3px solid rgba(99, 102, 241, 0.2);
-      border-top-color: #7c3aed;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-    }
-    
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-    
-    /* Action Buttons */
-    .actions {
-      display: flex;
-      gap: 12px;
-      margin-bottom: 24px;
-    }
-    
-    .action-btn {
-      flex: 1;
-      padding: 16px 24px;
-      border-radius: 12px;
-      border: none;
-      font-size: 15px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-    }
-    
-    .btn-download {
-      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-      color: white;
-      box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
-    }
-    
-    .btn-download:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 12px 25px rgba(16, 185, 129, 0.4);
-    }
-    
-    .btn-open {
-      background: rgba(30, 41, 59, 0.7);
-      color: #cbd5e1;
-      border: 1px solid rgba(255, 255, 255, 0.05);
-    }
-    
-    .btn-open:hover {
-      background: rgba(30, 41, 59, 0.9);
-      border-color: rgba(99, 102, 241, 0.3);
-      color: #f8fafc;
-    }
-    
-    /* Info Section */
-    .info-section {
-      background: rgba(30, 41, 59, 0.5);
-      border-radius: 12px;
-      padding: 20px;
-      margin-bottom: 24px;
-      border: 1px solid rgba(255, 255, 255, 0.05);
-    }
-    
-    .info-section h3 {
-      margin: 0 0 12px;
-      color: #e2e8f0;
-      font-size: 16px;
-      font-weight: 600;
-    }
-    
-    .contact-list {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 16px;
-    }
-    
-    .contact-list li {
-      flex: 1;
-      min-width: 200px;
-    }
-    
-    .contact-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 12px;
-      background: rgba(15, 23, 42, 0.5);
-      border-radius: 8px;
-      border: 1px solid rgba(255, 255, 255, 0.05);
-    }
-    
-    .contact-icon {
-      width: 32px;
-      height: 32px;
-      border-radius: 8px;
-      background: rgba(99, 102, 241, 0.1);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 16px;
-    }
-    
-    .contact-details {
-      flex: 1;
-    }
-    
-    .contact-platform {
-      font-size: 12px;
-      color: #94a3b8;
-      margin-bottom: 2px;
-    }
-    
-    .contact-username {
-      font-family: 'Monaco', 'Courier New', monospace;
-      font-size: 13px;
-      color: #f8fafc;
-      word-break: break-all;
-    }
-    
-    /* Footer */
-    footer {
-      text-align: center;
-      color: #64748b;
-      font-size: 13px;
-      padding-top: 20px;
-      border-top: 1px solid rgba(255, 255, 255, 0.05);
-    }
-    
-    /* Responsive Design */
-    @media (max-width: 768px) {
-      .container {
-        padding: 20px;
-      }
-      
-      header {
-        flex-direction: column;
-        text-align: center;
-        gap: 12px;
-      }
-      
-      .url-input-container {
-        flex-direction: column;
-      }
-      
-      .btn {
-        width: 100%;
-      }
-      
-      .actions {
-        flex-direction: column;
-      }
-      
-      .contact-list {
-        flex-direction: column;
-        gap: 12px;
-      }
-      
-      .contact-list li {
-        min-width: 100%;
-      }
-    }
-    
-    /* Utility Classes */
-    .hidden {
-      display: none !important;
-    }
-    
-    .fade-in {
-      animation: fadeIn 0.3s ease-out;
-    }
-    
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-    
-    /* Status Messages */
-    .status-message {
-      padding: 16px;
-      border-radius: 10px;
-      margin-bottom: 16px;
-      text-align: center;
-      font-weight: 500;
-    }
-    
-    .status-success {
-      background: rgba(16, 185, 129, 0.1);
-      border: 1px solid rgba(16, 185, 129, 0.2);
-      color: #34d399;
-    }
-    
-    .status-error {
-      background: rgba(239, 68, 68, 0.1);
-      border: 1px solid rgba(239, 68, 68, 0.2);
-      color: #f87171;
-    }
-    
-    .status-info {
-      background: rgba(59, 130, 246, 0.1);
-      border: 1px solid rgba(59, 130, 246, 0.2);
-      color: #60a5fa;
-    }
+    footer{text-align:center;margin-top:18px;color:#94a3b8;font-size:13px}
   </style>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
+
 <body>
-  <div class="container" role="main">
-    <header>
-      <div class="logo">
-        <i class="fas fa-download"></i>
-      </div>
-      <div>
-        <h1>Aanz Downloader</h1>
-        <p class="sub">Unduh Video YouTube, TikTok, dan Instagram dengan Kualitas Terbaik</p>
-      </div>
-    </header>
-
-    <!-- Platform Selection -->
-    <div class="platform-selector">
-      <div class="platform-tabs">
-        <button class="platform-tab active" data-platform="tiktok">
-          <i class="fab fa-tiktok"></i>
-          TikTok
-        </button>
-        <button class="platform-tab" data-platform="instagram">
-          <i class="fab fa-instagram"></i>
-          Instagram
-        </button>
-        <button class="platform-tab" data-platform="ytdl">
-          <i class="fab fa-youtube"></i>
-          YouTube
-        </button>
-      </div>
+<div class="container">
+  <header>
+    <div class="logo">&lt;/&gt;</div>
+    <div>
+      <h1>Aanz Downloader</h1>
+      <div class="sub">YouTube • TikTok • Instagram Downloader</div>
     </div>
+  </header>
 
-    <!-- URL Input Section -->
-    <div class="url-section">
-      <div class="url-input-container">
-        <input 
-          type="text" 
-          id="urlInput" 
-          class="url-input" 
-          placeholder="Tempel URL video di sini (contoh: https://tiktok.com/...)"
-          autocomplete="off"
-        />
-        <button id="btnPaste" class="btn btn-paste">
-          <i class="fas fa-paste"></i>
-          Paste
-        </button>
-        <button id="btnCreate" class="btn btn-create">
-          <i class="fas fa-bolt"></i>
-          Download
-        </button>
-      </div>
-      <div id="statusMessage" class="hidden"></div>
-    </div>
+  <div class="controls">
+    <select id="platform">
+      <option value="ytmp4">YouTube (MP4)</option>
+      <option value="tiktok" selected>TikTok</option>
+      <option value="instagram">Instagram</option>
+    </select>
 
-    <!-- Preview Section -->
-    <div class="preview-section">
-      <div id="preview" class="preview-container">
-        <div class="preview-placeholder">
-          <div class="icon">
-            <i class="fas fa-photo-video"></i>
-          </div>
-          <p>Preview akan muncul di sini setelah memproses URL</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Action Buttons -->
-    <div class="actions">
-      <button id="btnDownload" class="action-btn btn-download hidden">
-        <i class="fas fa-download"></i>
-        Download File
-      </button>
-      <button id="btnOpen" class="action-btn btn-open hidden">
-        <i class="fas fa-external-link-alt"></i>
-        Buka di Tab Baru
-      </button>
-    </div>
-
-    <!-- Info Section -->
-    <div class="info-section">
-      <h3>Kontak Developer</h3>
-      <ul class="contact-list">
-        <li>
-          <div class="contact-item">
-            <div class="contact-icon">
-              <i class="fab fa-instagram"></i>
-            </div>
-            <div class="contact-details">
-              <div class="contact-platform">Instagram</div>
-              <div class="contact-username">frkhnsptra__</div>
-            </div>
-          </div>
-        </li>
-        <li>
-          <div class="contact-item">
-            <div class="contact-icon">
-              <i class="fab fa-telegram"></i>
-            </div>
-            <div class="contact-details">
-              <div class="contact-platform">Telegram</div>
-              <div class="contact-username">AanzCuyxzzz</div>
-            </div>
-          </div>
-        </li>
-      </ul>
-    </div>
-
-    <footer>
-      <p>&copy; 2025 Aanz Downloader | Dibuat dengan <i class="fas fa-heart" style="color: #ef4444;"></i></p>
-    </footer>
+    <input id="urlInput" placeholder="Tempel URL video di sini">
+    <button id="btnPaste" class="ghost">Paste</button>
+    <button id="btnCreate" class="primary">Create</button>
   </div>
 
-  <script>
-    // ---------- CONFIG ----------
-    const API_ENDPOINTS = {
-      tiktok: "https://aan-rest-api.vercel.app/download/tiktok?apikey=aan&url=",
-      instagram: "https://aan-rest-api.vercel.app/download/instagram?apikey=aan&url=",
-      ytdl: "https://aan-rest-api.vercel.app/download/ytdl?apikey=aan&url="
-    };
-    
-    const COUNTER_KEY = "aanz_downloader_counter_v1";
-    // ----------------------------
+  <div id="preview" class="preview">
+    Preview akan tampil di sini
+  </div>
 
-    // DOM Elements
-    const platformTabs = document.querySelectorAll('.platform-tab');
-    const urlInput = document.getElementById('urlInput');
-    const btnPaste = document.getElementById('btnPaste');
-    const btnCreate = document.getElementById('btnCreate');
-    const preview = document.getElementById('preview');
-    const btnDownload = document.getElementById('btnDownload');
-    const btnOpen = document.getElementById('btnOpen');
-    const statusMessage = document.getElementById('statusMessage');
+  <div class="actions">
+    <button id="btnDownload" style="display:none">⬇️ Download</button>
+    <button id="btnOpen" style="display:none">🔗 Open</button>
+  </div>
 
-    // State variables
-    let currentPlatform = 'tiktok';
-    let lastBlob = null;
-    let lastUrl = null;
-    let lastIsBlob = false;
-    let lastContentType = "";
-    let lastFilename = "";
+  <footer>&lt;/&gt; 2025 Aanz</footer>
+</div>
 
-    // Platform selection
-    platformTabs.forEach(tab => {
-      tab.addEventListener('click', () => {
-        platformTabs.forEach(t => t.classList.remove('active'));
-        tab.classList.add('active');
-        currentPlatform = tab.dataset.platform;
-        
-        // Update placeholder based on platform
-        let placeholder = "Tempel URL video di sini";
-        switch(currentPlatform) {
-          case 'tiktok':
-            placeholder = "Tempel URL TikTok (contoh: https://tiktok.com/...)";
-            break;
-          case 'instagram':
-            placeholder = "Tempel URL Instagram (contoh: https://instagram.com/...)";
-            break;
-          case 'ytdl':
-            placeholder = "Tempel URL YouTube (contoh: https://youtube.com/...)";
-            break;
-        }
-        urlInput.placeholder = placeholder;
-      });
-    });
+<script>
+/* ================= CONFIG ================= */
+const API = {
+  instagram: "https://aan-rest-api.vercel.app/download/instagram?apikey=aan&url=",
+  tiktok: "https://aan-rest-api.vercel.app/download/tiktok?apikey=aan&url=",
+  ytmp4: "https://aan-rest-api.vercel.app/download/ytdl?apikey=aan&url="
+};
+const COUNTER_KEY = "aanz_dl_counter";
+/* ========================================= */
 
-    // Get next filename with counter
-    function getNextFilename(ext = "mp4") {
-      let n = parseInt(localStorage.getItem(COUNTER_KEY) || "0", 10) || 0;
-      n = n + 1;
-      localStorage.setItem(COUNTER_KEY, String(n));
-      return `aanzdownloader_${n}.${ext}`;
-    }
+const platform = document.getElementById("platform");
+const urlInput = document.getElementById("urlInput");
+const btnPaste = document.getElementById("btnPaste");
+const btnCreate = document.getElementById("btnCreate");
+const preview = document.getElementById("preview");
+const btnDownload = document.getElementById("btnDownload");
+const btnOpen = document.getElementById("btnOpen");
 
-    // Show status message
-    function showStatus(text, type = 'info') {
-      statusMessage.textContent = text;
-      statusMessage.className = `status-message status-${type} fade-in`;
-      statusMessage.classList.remove('hidden');
-      
-      // Auto hide after 5 seconds for success messages
-      if (type === 'success') {
-        setTimeout(() => {
-          statusMessage.classList.add('hidden');
-        }, 5000);
-      }
-    }
+let lastBlob = null;
+let lastUrl = null;
+let lastType = "";
 
-    // Hide status message
-    function hideStatus() {
-      statusMessage.classList.add('hidden');
-    }
+/* Paste */
+btnPaste.onclick = async () => {
+  try {
+    urlInput.value = await navigator.clipboard.readText();
+  } catch {
+    alert("Clipboard tidak bisa diakses");
+  }
+};
 
-    // Set loading state
-    function setLoading(loading) {
-      btnCreate.disabled = loading;
-      btnCreate.innerHTML = loading 
-        ? '<i class="fas fa-spinner fa-spin"></i> Memproses...' 
-        : '<i class="fas fa-bolt"></i> Download';
-      
-      if (loading) {
-        preview.innerHTML = `
-          <div class="preview-loading">
-            <div class="spinner"></div>
-            <p>Memproses video, harap tunggu...</p>
-          </div>
-        `;
-      }
-    }
+/* Create */
+btnCreate.onclick = async () => {
+  const url = urlInput.value.trim();
+  if (!url) return alert("Masukkan URL dulu!");
 
-    // Clear preview
-    function clearPreview() {
-      preview.innerHTML = `
-        <div class="preview-placeholder">
-          <div class="icon">
-            <i class="fas fa-photo-video"></i>
-          </div>
-          <p>Preview akan muncul di sini setelah memproses URL</p>
-        </div>
-      `;
-      btnDownload.classList.add('hidden');
-      btnOpen.classList.add('hidden');
-      lastBlob = null;
-      lastUrl = null;
-      lastIsBlob = false;
-      lastContentType = "";
-      lastFilename = "";
-      hideStatus();
-    }
+  setLoading(true);
+  resetPreview();
 
-    // Enable action buttons
-    function enableActions() {
-      btnDownload.classList.remove('hidden');
-      btnOpen.classList.remove('hidden');
-    }
+  try {
+    const apiUrl = API[platform.value] + encodeURIComponent(url);
+    const res = await fetch(apiUrl);
+    const json = await res.json();
 
-    // Paste from clipboard
-    btnPaste.addEventListener('click', async () => {
-      try {
-        const text = await navigator.clipboard.readText();
-        if (text) {
-          urlInput.value = text.trim();
-          showStatus('URL berhasil di-paste!', 'success');
-          
-          // Auto-scroll to input and focus
-          urlInput.focus();
-          urlInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        } else {
-          showStatus('Clipboard kosong atau tidak berisi teks.', 'error');
-        }
-      } catch (err) {
-        console.error('Clipboard error:', err);
-        showStatus('Gagal membaca clipboard. Pastikan izin diberikan.', 'error');
-      }
-    });
+    const videoUrl =
+      json.result?.video?.noWatermark ||
+      json.result?.video?.url ||
+      json.result?.url ||
+      json.url ||
+      json.download;
 
-    // Process URL and download
-    btnCreate.addEventListener('click', async () => {
-      const input = urlInput.value.trim();
-      if (!input) {
-        showStatus('Masukkan URL video terlebih dahulu.', 'error');
-        urlInput.focus();
-        return;
-      }
+    if (!videoUrl) throw "Link video tidak ditemukan";
 
-      // Validate URL
-      try {
-        new URL(input);
-      } catch (e) {
-        showStatus('URL tidak valid. Pastikan URL lengkap (contoh: https://...)', 'error');
-        return;
-      }
+    const vr = await fetch(videoUrl);
+    const blob = await vr.blob();
 
-      setLoading(true);
-      hideStatus();
-      clearPreview();
+    lastBlob = blob;
+    lastUrl = URL.createObjectURL(blob);
+    lastType = vr.headers.get("content-type") || "video/mp4";
 
-      try {
-        // Build API URL
-        const apiUrl = `${API_ENDPOINTS[currentPlatform]}${encodeURIComponent(input)}`;
-        
-        showStatus('Mengambil data video...', 'info');
-        
-        // Fetch from API
-        const response = await fetch(apiUrl);
-        
-        if (!response.ok) {
-          throw new Error(`API error: ${response.status} ${response.statusText}`);
-        }
+    preview.innerHTML = `<video controls src="${lastUrl}"></video>`;
+    showActions(true);
 
-        const contentType = response.headers.get('content-type') || '';
-        
-        // Check if response is JSON (error or API response)
-        if (contentType.includes('application/json')) {
-          const data = await response.json();
-          
-          // Check for error in response
-          if (data.error || data.message) {
-            throw new Error(data.error || data.message || 'API mengembalikan error');
-          }
-          
-          // Check for direct video URL in response
-          if (data.url || data.downloadUrl || data.videoUrl) {
-            const videoUrl = data.url || data.downloadUrl || data.videoUrl;
-            await processVideoUrl(videoUrl);
-          } else {
-            throw new Error('Tidak ditemukan URL video dalam respons API');
-          }
-        } 
-        // Check if response is direct video
-        else if (contentType.includes('video/') || contentType.includes('image/')) {
-          const blob = await response.blob();
-          await processVideoBlob(blob, contentType);
-        }
-        // Check if response is octet-stream (likely video)
-        else if (contentType.includes('octet-stream')) {
-          const blob = await response.blob();
-          
-          // Check if blob is actually a video by size and type detection
-          if (blob.size > 10000) { // Assume files > 10KB are videos
-            await processVideoBlob(blob, 'video/mp4');
-          } else {
-            throw new Error('File yang diterima terlalu kecil atau bukan video');
-          }
-        }
-        // Unknown content type
-        else {
-          const text = await response.text();
-          console.warn('Unexpected response:', text.substring(0, 200));
-          throw new Error('Format respons tidak dikenali');
-        }
-      } catch (err) {
-        console.error('Download error:', err);
-        showStatus(`Gagal: ${err.message}`, 'error');
-        
-        preview.innerHTML = `
-          <div class="preview-placeholder">
-            <div class="icon" style="color: #f87171;">
-              <i class="fas fa-exclamation-triangle"></i>
-            </div>
-            <p>Gagal memproses video</p>
-            <p style="font-size: 14px; margin-top: 10px;">${escapeHtml(err.message)}</p>
-          </div>
-        `;
-      } finally {
-        setLoading(false);
-      }
-    });
+  } catch (e) {
+    preview.innerHTML = `<div style="color:#fca5a5">Gagal: ${e}</div>`;
+  }
 
-    // Process video from URL
-    async function processVideoUrl(videoUrl) {
-      showStatus('Mengambil video...', 'info');
-      
-      try {
-        const videoResponse = await fetch(videoUrl);
-        
-        if (!videoResponse.ok) {
-          throw new Error(`Gagal mengambil video: ${videoResponse.status}`);
-        }
-        
-        const blob = await videoResponse.blob();
-        const contentType = videoResponse.headers.get('content-type') || 'video/mp4';
-        
-        await processVideoBlob(blob, contentType, videoUrl);
-      } catch (err) {
-        // If direct fetch fails, try to use the URL directly
-        console.warn('Direct fetch failed, using URL directly:', err);
-        lastUrl = videoUrl;
-        lastIsBlob = false;
-        lastContentType = 'video/mp4';
-        
-        renderPreviewFromUrl(videoUrl);
-        enableActions();
-        showStatus('Video siap diunduh!', 'success');
-      }
-    }
+  setLoading(false);
+};
 
-    // Process video blob
-    async function processVideoBlob(blob, contentType, originalUrl = null) {
-      lastBlob = blob;
-      lastIsBlob = true;
-      lastContentType = contentType;
-      lastUrl = URL.createObjectURL(blob);
-      
-      // Generate filename
-      let ext = 'mp4';
-      if (contentType.includes('mp4')) ext = 'mp4';
-      else if (contentType.includes('webm')) ext = 'webm';
-      else if (contentType.includes('gif')) ext = 'gif';
-      else if (contentType.includes('jpeg') || contentType.includes('jpg')) ext = 'jpg';
-      else if (contentType.includes('png')) ext = 'png';
-      
-      lastFilename = getNextFilename(ext);
-      
-      renderPreviewFromBlob(blob, contentType);
-      enableActions();
-      showStatus('Video berhasil diambil! Klik Download untuk menyimpan.', 'success');
-    }
+/* Download */
+btnDownload.onclick = () => {
+  const ext = lastType.includes("webm") ? "webm" : "mp4";
+  const name = nextFile(ext);
+  const a = document.createElement("a");
+  a.href = lastUrl;
+  a.download = name;
+  a.click();
+};
 
-    // Render preview from blob
-    function renderPreviewFromBlob(blob, contentType) {
-      const objectUrl = URL.createObjectURL(blob);
-      
-      if (contentType.includes('video/')) {
-        preview.innerHTML = `
-          <video controls autoplay muted style="width:100%; max-height:500px;">
-            <source src="${objectUrl}" type="${contentType}">
-            Browser Anda tidak mendukung pemutar video.
-          </video>
-        `;
-      } else if (contentType.includes('image/')) {
-        preview.innerHTML = `
-          <img src="${objectUrl}" alt="Preview" style="max-width:100%; max-height:500px; border-radius:8px;">
-        `;
-      } else {
-        preview.innerHTML = `
-          <div class="preview-placeholder">
-            <div class="icon">
-              <i class="fas fa-file-download"></i>
-            </div>
-            <p>File siap diunduh</p>
-            <p style="font-size:14px; margin-top:8px;">${formatBytes(blob.size)} • ${contentType}</p>
-          </div>
-        `;
-      }
-    }
+/* Open */
+btnOpen.onclick = () => window.open(lastUrl, "_blank");
 
-    // Render preview from URL
-    function renderPreviewFromUrl(url) {
-      preview.innerHTML = `
-        <div class="preview-placeholder">
-          <div class="icon">
-            <i class="fas fa-external-link-alt"></i>
-          </div>
-          <p>Video siap dibuka</p>
-          <p style="font-size:14px; margin-top:8px;">Gunakan tombol "Buka di Tab Baru" untuk melihat video</p>
-          <a href="${escapeHtml(url)}" target="_blank" rel="noopener" 
-             style="display:inline-block; margin-top:12px; padding:8px 16px; background:rgba(99,102,241,0.2); border-radius:6px; color:#60a5fa; text-decoration:none;">
-            <i class="fas fa-external-link-alt"></i> Buka Link
-          </a>
-        </div>
-      `;
-    }
-
-    // Download button handler
-    btnDownload.addEventListener('click', async () => {
-      try {
-        if (lastIsBlob && lastBlob) {
-          // Download from blob
-          saveBlob(lastBlob, lastFilename || getNextFilename());
-          showStatus('Download dimulai!', 'success');
-        } else if (lastUrl) {
-          // Download from URL
-          const link = document.createElement('a');
-          link.href = lastUrl;
-          link.download = lastFilename || getNextFilename();
-          link.target = '_blank';
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-          showStatus('Membuka video untuk diunduh...', 'success');
-        } else {
-          showStatus('Tidak ada file untuk diunduh.', 'error');
-        }
-      } catch (err) {
-        console.error('Download error:', err);
-        showStatus(`Gagal mengunduh: ${err.message}`, 'error');
-      }
-    });
-
-    // Open button handler
-    btnOpen.addEventListener('click', () => {
-      if (!lastUrl) {
-        showStatus('Tidak ada resource untuk dibuka.', 'error');
-        return;
-      }
-      
-      window.open(lastUrl, '_blank', 'noopener,noreferrer');
-      showStatus('Membuka di tab baru...', 'success');
-    });
-
-    // Save blob to file
-    function saveBlob(blob, filename) {
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      
-      // Clean up object URL
-      setTimeout(() => URL.revokeObjectURL(url), 1000);
-    }
-
-    // Utility functions
-    function escapeHtml(text) {
-      const div = document.createElement('div');
-      div.textContent = text;
-      return div.innerHTML;
-    }
-
-    function formatBytes(bytes, decimals = 2) {
-      if (bytes === 0) return '0 Bytes';
-      const k = 1024;
-      const dm = decimals < 0 ? 0 : decimals;
-      const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-      const i = Math.floor(Math.log(bytes) / Math.log(k));
-      return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
-    }
-
-    // Auto-paste on focus
-    urlInput.addEventListener('focus', async () => {
-      // Check if input is empty, then try to paste
-      if (!urlInput.value.trim()) {
-        try {
-          const text = await navigator.clipboard.readText();
-          // Check if clipboard contains a URL
-          if (text && (text.includes('http://') || text.includes('https://'))) {
-            urlInput.value = text.trim();
-            showStatus('URL otomatis di-paste dari clipboard!', 'success');
-          }
-        } catch (err) {
-          // Ignore clipboard errors
-        }
-      }
-    });
-
-    // Enter key to trigger download
-    urlInput.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') {
-        btnCreate.click();
-      }
-    });
-
-    // Initialize
-    clearPreview();
-  </script>
+/* Utils */
+function nextFile(ext){
+  let n = +localStorage.getItem(COUNTER_KEY) || 0;
+  n++;
+  localStorage.setItem(COUNTER_KEY,n);
+  return `aanzdownloader_${n}.${ext}`;
+}
+function resetPreview(){
+  preview.innerHTML = "Preview akan tampil di sini";
+  showActions(false);
+}
+function showActions(v){
+  btnDownload.style.display = v ? "block" : "none";
+  btnOpen.style.display = v ? "block" : "none";
+}
+function setLoading(v){
+  btnCreate.textContent = v ? "Working..." : "Create";
+  btnCreate.disabled = v;
+}
+</script>
 </body>
 </html>
