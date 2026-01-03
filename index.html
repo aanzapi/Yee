@@ -1,218 +1,126 @@
-<!DOCTYPE html>
-<html lang="id">
+<!DOCTYPE html><html lang="id">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Aanz Downloader</title>
-
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TikTok Downloader</title>
   <style>
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family:Inter,system-ui;
-      background:linear-gradient(135deg,#0f172a,#1e293b);
-      color:#f8fafc;
-      min-height:100vh;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:20px
+    body {
+      font-family: Inter, system-ui, Arial, sans-serif;
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      min-height: 100vh;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
     }
-    .container{
-      width:100%;
-      max-width:880px;
-      background:rgba(255,255,255,0.04);
-      border-radius:16px;
-      padding:22px;
-      box-shadow:0 20px 50px rgba(0,0,0,.6)
+    .card {
+      background: #020617;
+      width: 100%;
+      max-width: 420px;
+      padding: 24px;
+      border-radius: 16px;
+      box-shadow: 0 20px 40px rgba(0,0,0,.4);
     }
-    header{display:flex;gap:12px;align-items:center}
-    .logo{
-      width:52px;height:52px;
-      border-radius:12px;
-      background:linear-gradient(90deg,#60a5fa,#7c3aed);
-      display:flex;align-items:center;justify-content:center;
-      font-weight:900;color:#020617
+    h1 {
+      font-size: 22px;
+      margin-bottom: 12px;
+      text-align: center;
     }
-    h1{margin:0;font-size:20px}
-    .sub{color:#94a3b8;font-size:13px}
-    .controls{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
-    select,input,button{
-      padding:12px;border-radius:10px;border:none;
-      font-size:14px
+    p {
+      font-size: 14px;
+      color: #cbd5f5;
+      text-align: center;
+      margin-bottom: 20px;
     }
-    select,input{
-      flex:1;
-      background:#020617;
-      color:#fff
+    input {
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      border: none;
+      outline: none;
+      margin-bottom: 12px;
     }
-    button.primary{
-      background:linear-gradient(90deg,#60a5fa,#7c3aed);
-      color:#020617;font-weight:700;cursor:pointer
+    button {
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      border: none;
+      background: #6366f1;
+      color: #fff;
+      font-weight: 600;
+      cursor: pointer;
     }
-    button.ghost{
-      background:#020617;color:#cbd5e1;cursor:pointer
+    button:hover { background: #4f46e5; }
+    .result {
+      margin-top: 20px;
+      display: none;
     }
-    .preview{
-      margin-top:18px;
-      background:#000;
-      border-radius:14px;
-      min-height:260px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      color:#94a3b8
+    .result img {
+      width: 100%;
+      border-radius: 12px;
+      margin-bottom: 12px;
     }
-    video{width:100%;border-radius:12px}
-    .actions{display:flex;gap:10px;margin-top:14px}
-    .actions button{
-      flex:1;
-      padding:12px;
-      border-radius:10px;
-      background:#020617;
-      color:#fff;
-      cursor:pointer
+    .links a {
+      display: block;
+      text-align: center;
+      padding: 10px;
+      margin-bottom: 8px;
+      background: #1e293b;
+      border-radius: 10px;
+      color: #fff;
+      text-decoration: none;
+      font-size: 14px;
     }
-    footer{text-align:center;margin-top:18px;color:#94a3b8;font-size:13px}
+    .links a:hover { background: #334155; }
+    .footer {
+      text-align: center;
+      margin-top: 16px;
+      font-size: 12px;
+      color: #94a3b8;
+    }
   </style>
 </head>
-
 <body>
-<div class="container">
-  <header>
-    <div class="logo">&lt;/&gt;</div>
-    <div>
-      <h1>Aanz Downloader</h1>
-      <div class="sub">YouTube • TikTok • Instagram Downloader</div>
-    </div>
-  </header>
+  <div class="card">
+    <h1>🎵 TikTok Downloader</h1>
+    <p>Download video TikTok tanpa watermark</p><input id="url" type="text" placeholder="Paste link TikTok di sini" />
+<button onclick="download()">Download</button>
 
-  <div class="controls">
-    <select id="platform">
-      <option value="ytmp4">YouTube (MP4)</option>
-      <option value="tiktok" selected>TikTok</option>
-      <option value="instagram">Instagram</option>
-    </select>
-
-    <input id="urlInput" placeholder="Tempel URL video di sini">
-    <button id="btnPaste" class="ghost">Paste</button>
-    <button id="btnCreate" class="primary">Create</button>
+<div id="result" class="result">
+  <img id="thumb" />
+  <h3 id="title"></h3>
+  <div class="links">
+    <a id="sd" target="_blank">⬇️ Download Video SD</a>
+    <a id="hd" target="_blank">⬇️ Download Video HD</a>
+    <a id="mp3" target="_blank">🎧 Download MP3</a>
   </div>
-
-  <div id="preview" class="preview">
-    Preview akan tampil di sini
-  </div>
-
-  <div class="actions">
-    <button id="btnDownload" style="display:none">⬇️ Download</button>
-    <button id="btnOpen" style="display:none">🔗 Open</button>
-  </div>
-
-  <footer>&lt;/&gt; 2025 Aanz</footer>
 </div>
 
-<script>
-/* ================= CONFIG ================= */
-const API = {
-  instagram: "https://aan-rest-api.vercel.app/download/instagram?apikey=aan&url=",
-  tiktok: "https://aan-rest-api.vercel.app/download/tiktok?apikey=aan&url=",
-  ytmp4: "https://aan-rest-api.vercel.app/download/ytdl?apikey=aan&url="
-};
-const COUNTER_KEY = "aanz_dl_counter";
-/* ========================================= */
+<div class="footer">Powered by AanzDigital API</div>
 
-const platform = document.getElementById("platform");
-const urlInput = document.getElementById("urlInput");
-const btnPaste = document.getElementById("btnPaste");
-const btnCreate = document.getElementById("btnCreate");
-const preview = document.getElementById("preview");
-const btnDownload = document.getElementById("btnDownload");
-const btnOpen = document.getElementById("btnOpen");
+  </div>  <script>
+    async function download() {
+      const url = document.getElementById('url').value.trim();
+      if (!url) return alert('Masukkan URL TikTok');
 
-let lastBlob = null;
-let lastUrl = null;
-let lastType = "";
+      const api = `https://aan-rest-api.vercel.app/download/tiktok?apikey=aan&url=${encodeURIComponent(url)}`;
 
-/* Paste */
-btnPaste.onclick = async () => {
-  try {
-    urlInput.value = await navigator.clipboard.readText();
-  } catch {
-    alert("Clipboard tidak bisa diakses");
-  }
-};
+      try {
+        const res = await fetch(api);
+        const json = await res.json();
+        if (!json.status) return alert('Gagal mengambil data');
 
-/* Create */
-btnCreate.onclick = async () => {
-  const url = urlInput.value.trim();
-  if (!url) return alert("Masukkan URL dulu!");
-
-  setLoading(true);
-  resetPreview();
-
-  try {
-    const apiUrl = API[platform.value] + encodeURIComponent(url);
-    const res = await fetch(apiUrl);
-    const json = await res.json();
-
-    const videoUrl =
-      json.result?.video?.noWatermark ||
-      json.result?.video?.url ||
-      json.result?.url ||
-      json.url ||
-      json.download;
-
-    if (!videoUrl) throw "Link video tidak ditemukan";
-
-    const vr = await fetch(videoUrl);
-    const blob = await vr.blob();
-
-    lastBlob = blob;
-    lastUrl = URL.createObjectURL(blob);
-    lastType = vr.headers.get("content-type") || "video/mp4";
-
-    preview.innerHTML = `<video controls src="${lastUrl}"></video>`;
-    showActions(true);
-
-  } catch (e) {
-    preview.innerHTML = `<div style="color:#fca5a5">Gagal: ${e}</div>`;
-  }
-
-  setLoading(false);
-};
-
-/* Download */
-btnDownload.onclick = () => {
-  const ext = lastType.includes("webm") ? "webm" : "mp4";
-  const name = nextFile(ext);
-  const a = document.createElement("a");
-  a.href = lastUrl;
-  a.download = name;
-  a.click();
-};
-
-/* Open */
-btnOpen.onclick = () => window.open(lastUrl, "_blank");
-
-/* Utils */
-function nextFile(ext){
-  let n = +localStorage.getItem(COUNTER_KEY) || 0;
-  n++;
-  localStorage.setItem(COUNTER_KEY,n);
-  return `aanzdownloader_${n}.${ext}`;
-}
-function resetPreview(){
-  preview.innerHTML = "Preview akan tampil di sini";
-  showActions(false);
-}
-function showActions(v){
-  btnDownload.style.display = v ? "block" : "none";
-  btnOpen.style.display = v ? "block" : "none";
-}
-function setLoading(v){
-  btnCreate.textContent = v ? "Working..." : "Create";
-  btnCreate.disabled = v;
-}
-</script>
-</body>
+        const r = json.result;
+        document.getElementById('thumb').src = r.thumbnail;
+        document.getElementById('title').innerText = r.title;
+        document.getElementById('sd').href = r.video_sd;
+        document.getElementById('hd').href = r.video_hd;
+        document.getElementById('mp3').href = r.mp3;
+        document.getElementById('result').style.display = 'block';
+      } catch (e) {
+        alert('Terjadi kesalahan');
+      }
+    }
+  </script></body>
 </html>
